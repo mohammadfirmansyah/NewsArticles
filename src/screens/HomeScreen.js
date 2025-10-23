@@ -1,3 +1,5 @@
+// Selamat datang di HomeScreen! Ini adalah layar utama aplikasi kita, tempat semua berita ditampilkan.
+// Mari kita siapkan semua yang kita butuhkan.
 
 import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
 import React, { useState } from "react";
@@ -6,13 +8,21 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+
+// Kita juga butuh komponen kustom yang sudah kita buat untuk menampilkan kategori dan artikel.
 import Categories from "../components/categories";
 import Articles from "../components/articles";
 
+// Inilah komponen utama kita, `HomeScreen`.
 export default function HomeScreen() {
+  // `useState` kita gunakan untuk mengelola data yang bisa berubah di layar ini.
+
+  // `activeCategory` akan menyimpan kategori berita yang sedang dipilih oleh pengguna.
+  // Kita mulai dengan "Technology" sebagai default.
   const [activeCategory, setActiveCategory] = useState("Technology");
 
-  // Hardcoded categories for news
+  // `categories` berisi daftar semua kategori berita yang kita miliki.
+  // Untuk sekarang, kita gunakan data dummy (data bohongan) langsung di sini.
   const [categories, setCategories] = useState([
     {
       idCategory: "1",
@@ -46,7 +56,8 @@ export default function HomeScreen() {
     },
   ]);
 
-  // Keep all articles in state (unfiltered list)
+  // `allArticles` berisi semua artikel berita kita.
+  // Sama seperti kategori, kita masih menggunakan data dummy.
   const [allArticles, setAllArticles] = useState([
     {
       idArticle: "1",
@@ -295,23 +306,27 @@ export default function HomeScreen() {
     }
   ]);
 
+  // Fungsi ini akan dipanggil ketika pengguna memilih kategori baru.
   const handleChangeCategory = (category) => {
     setActiveCategory(category);
   };
 
-  // Filter articles by active category during rendering
+  // Di sini, kita filter artikel mana yang akan ditampilkan berdasarkan `activeCategory`.
   const filteredArticles = allArticles.filter(
     (article) => article.category === activeCategory
   );
 
+  // Sekarang, mari kita susun tampilan komponennya.
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
+      {/* `ScrollView` memungkinkan pengguna untuk scroll ke bawah jika kontennya panjang. */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
         testID="scrollContainer"
       >
+        {/* Bagian Header: Sapaan untuk pengguna. */}
         <View style={styles.headerContainer} testID="headerContainer">
           <Image
             source={require("../../assets/images/avatar.png")}
@@ -320,6 +335,7 @@ export default function HomeScreen() {
           <Text style={styles.greetingText}>Hello, User!</Text>
         </View>
 
+        {/* Bagian Judul: Memberi tahu pengguna tentang isi aplikasi. */}
         <View style={styles.titleContainer} testID="titleContainer">
           <Text style={styles.title}>Stay updated with the latest news,</Text>
           <Text style={styles.subtitle}>
@@ -327,18 +343,28 @@ export default function HomeScreen() {
           </Text>
         </View>
 
+        {/* Bagian Kategori: Di sinilah kita akan menampilkan daftar kategori. */}
+        {/* Kita teruskan semua data yang dibutuhkan oleh komponen Categories. */}
         <View testID="categoryList">
-        
+          <Categories
+            categories={categories}
+            activeCategory={activeCategory}
+            handleChangeCategory={handleChangeCategory}
+          />
         </View>
 
+        {/* Bagian Artikel: Dan di sini kita tampilkan daftar artikel yang sudah difilter. */}
+        {/* Komponen Articles akan menerima artikel yang sudah difilter dan daftar kategori. */}
         <View testID="articleList">
-         
-          </View>
+          <Articles articles={filteredArticles} categories={categories} />
+        </View>
       </ScrollView>
     </View>
   );
 }
 
+// `StyleSheet.create` digunakan untuk mendefinisikan semua gaya (style) komponen kita.
+// Ini lebih efisien daripada inline-style.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
