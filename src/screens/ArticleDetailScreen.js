@@ -1,28 +1,43 @@
-import {View,Text,ScrollView,TouchableOpacity,Image,StyleSheet,} from "react-native";
+// Selamat datang di ArticleDetailScreen! Di sini kita akan menampilkan detail lengkap dari sebuah artikel.
+
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+} from "react-native";
 import React from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux"; // Redux hooks
-import { toggleFavorite } from "../redux/favoritesSlice"; // Redux action
+import { useDispatch, useSelector } from "react-redux"; // Kita butuh hook dari Redux untuk mengelola state favorit.
+import { toggleFavorite } from "../redux/favoritesSlice"; // Dan action untuk menambah/menghapus favorit.
 
 export default function ArticleDetailScreen(props) {
-  const article = props.route.params; // Article passed from previous screen
+  // Pertama, kita ambil data artikel yang dikirim dari layar sebelumnya (HomeScreen).
+  const article = props.route.params;
 
   const dispatch = useDispatch();
+  // Kita ambil daftar artikel favorit dari state Redux.
   const favoriteArticles = useSelector(
     (state) => state.favorites.favoriteArticles
   );
+  // Kita cek apakah artikel ini sudah ada di daftar favorit.
   const isFavourite = favoriteArticles?.some(
     (favArticle) => favArticle.idArticle === article.idArticle
-  ); // Check by idArticle
+  );
 
   const navigation = useNavigation();
 
+  // Fungsi ini akan dijalankan saat tombol favorit ditekan.
   const handleToggleFavorite = () => {
-    dispatch(toggleFavorite(article)); // Dispatch the article to favorites
+    // Kita 'dispatch' action `toggleFavorite` dengan membawa data artikel ini.
+    // Redux akan menangani logika untuk menambah atau menghapusnya dari daftar.
+    dispatch(toggleFavorite(article));
   };
 
   return (
@@ -31,45 +46,63 @@ export default function ArticleDetailScreen(props) {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
-      {/* Article Image */}
+      {/* Bagian Gambar Artikel */}
       <View style={styles.imageContainer} testID="imageContainer">
-         
+        <Image
+          source={{ uri: article.thumbnail }}
+          style={styles.articleImage}
+        />
       </View>
 
-      {/* Back Button and Favorite Button */}
-                 
+      {/* Tombol Kembali dan Favorit */}
+      {/* Tombol-tombol ini kita letakkan di atas gambar dengan posisi absolut. */}
+      <View style={styles.topButtonsContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Text>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleToggleFavorite}
+          style={[
+            styles.favoriteButton,
+            {
+              backgroundColor: "white",
+            },
+          ]}
+        >
+          {/* Tampilan tombol favorit berubah tergantung status `isFavourite`. */}
+          <Text>{isFavourite ? "♥" : "♡"}</Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Article Description */}
-  
-        <View style={styles.contentContainer}>
-          {/* Title and Category */}
-          <View
-            style={styles.articleDetailsContainer}
-            testID="articleDetailsContainer"
-          >
-            <Text style={styles.articleTitle} testID="articleTitle">
-         
-             
-              
-              </Text>
-            <Text style={styles.articleCategory} testID="articleCategory">
-                         
-              </Text>
-          </View>
-
-          {/* Description */}
-          <View
-            
-            style={styles.sectionContainer}
-            testID="sectionContainer"
-          >
-          
-          </View>
+      {/* Konten Detail Artikel */}
+      <View style={styles.contentContainer}>
+        {/* Judul dan Kategori */}
+        <View
+          style={styles.articleDetailsContainer}
+          testID="articleDetailsContainer"
+        >
+          <Text style={styles.articleTitle} testID="articleTitle">
+            {article.title}
+          </Text>
+          <Text style={styles.articleCategory} testID="articleCategory">
+            {article.category}
+          </Text>
         </View>
+
+        {/* Deskripsi */}
+        <View style={styles.sectionContainer} testID="sectionContainer">
+          <Text style={styles.sectionTitle}>Description</Text>
+          <Text style={styles.descriptionText}>{article.description}</Text>
+        </View>
+      </View>
     </ScrollView>
   );
 }
 
+// Dan ini adalah semua style yang kita butuhkan.
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
@@ -83,12 +116,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   articleImage: {
-    width: wp(98),
-    height: hp(40),
-    borderRadius: 20,
+    width: wp(100),
+    height: hp(50),
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
-    marginTop: 4,
   },
   topButtonsContainer: {
     width: "100%",
@@ -96,24 +127,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: hp(4),
+    paddingTop: hp(5),
   },
   backButton: {
-    padding: 8,
+    padding: 10,
     borderRadius: 50,
-    marginLeft: wp(5),
-    backgroundColor: "white",
+    marginLeft: wp(4),
+    backgroundColor: "rgba(255,255,255,0.7)",
   },
   favoriteButton: {
-    padding: 8,
+    padding: 10,
     borderRadius: 50,
-    borderWidth: 1,
-    marginRight: wp(5),
+    marginRight: wp(4),
+    backgroundColor: "rgba(255,255,255,0.7)",
   },
-
   contentContainer: {
     paddingHorizontal: wp(4),
-    paddingTop: hp(4),
+    paddingTop: hp(2),
   },
   articleDetailsContainer: {
     marginBottom: hp(2),
@@ -121,12 +151,13 @@ const styles = StyleSheet.create({
   articleTitle: {
     fontSize: hp(3),
     fontWeight: "bold",
-    color: "#4B5563", // text-neutral-700
+    color: "#333",
   },
   articleCategory: {
     fontSize: hp(2),
     fontWeight: "500",
-    color: "#9CA3AF", // text-neutral-500
+    color: "#666",
+    marginTop: hp(1),
   },
   sectionContainer: {
     marginBottom: hp(2),
@@ -134,12 +165,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: hp(2.5),
     fontWeight: "bold",
-    color: "#4B5563", // text-neutral-700
+    color: "#333",
+    marginBottom: hp(1),
   },
   descriptionText: {
     fontSize: hp(1.8),
-    color: "#4B5563", // text-neutral-700
+    color: "#444",
     textAlign: "justify",
-    lineHeight: hp(2.5),
+    lineHeight: hp(2.8),
   },
 });
