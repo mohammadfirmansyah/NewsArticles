@@ -1,7 +1,14 @@
-// Mari kita bangun komponen untuk menampilkan daftar artikel.
-// Ini akan menjadi galeri berita utama kita.
+// Let's build the component responsible for displaying a list of articles.
+// This will serve as our main news gallery.
 
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import React from "react";
 import {
   widthPercentageToDP as wp,
@@ -9,13 +16,16 @@ import {
 } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
 
-// Ini adalah komponen utama kita untuk menampilkan daftar artikel.
-// Ia menerima 'articles' sebagai prop dari HomeScreen.
+/**
+ * The primary component for displaying a list of articles.
+ * It receives an 'articles' array as a prop from HomeScreen.
+ * @param {{ articles: Array<Object> }} props - The component props.
+ */
 export default function Articles({ articles }) {
   const navigation = useNavigation();
 
-  // `renderItem` adalah fungsi yang akan dipanggil oleh FlatList untuk setiap artikel.
-  // Ini memberitahu FlatList cara merender setiap 'kartu' artikel.
+  // `renderItem` is a function passed to FlatList to define how each item is rendered.
+  // It returns an `ArticleCard` component for each article in the data array.
   const renderItem = ({ item, index }) => (
     <ArticleCard item={item} index={index} navigation={navigation} />
   );
@@ -25,46 +35,52 @@ export default function Articles({ articles }) {
       <Text style={styles.title} testID="title">
         Latest News
       </Text>
-      {/* Di sinilah kita akan menampilkan daftar artikel kita. */}
-      {/* `FlatList` sangat efisien untuk menampilkan daftar panjang. */}
+      {/* 
+        Here, we display our list of articles.
+        `FlatList` is a highly efficient component for rendering long lists
+        because it virtualizes the content, only rendering items currently in the viewport.
+      */}
       <View testID="articlesDisplay">
         <FlatList
           data={articles}
-          keyExtractor={(item) => item.idArticle} // Kunci unik untuk setiap item.
+          keyExtractor={(item) => item.idArticle} // Provides a unique key for each item.
           renderItem={renderItem}
-          numColumns={2} // Kita atur 2 kolom untuk membuat tampilan grid.
-          columnWrapperStyle={styles.row} // Menambahkan style untuk setiap baris grid.
+          numColumns={2} // We set 2 columns to create a grid layout.
+          columnWrapperStyle={styles.row} // Applies styling to each row of the grid.
         />
       </View>
     </View>
   );
 }
 
-// `ArticleCard` adalah komponen untuk satu kartu artikel.
+/**
+ * `ArticleCard` is a presentational component for a single article.
+ * @param {{ item: Object, index: number, navigation: Object }} props - The component props.
+ */
 const ArticleCard = ({ item, index, navigation }) => {
   return (
     <View style={styles.cardContainer}>
-      {/* `TouchableOpacity` membuat seluruh kartu dapat diklik. */}
+      {/* `TouchableOpacity` makes the entire card tappable. */}
       <TouchableOpacity
         testID="articleDisplay"
         onPress={() => navigation.navigate("ArticleDetail", { ...item })}
       >
-        {/* Gambar thumbnail artikel. */}
+        {/* The article's thumbnail image. */}
         <Image
           source={{ uri: item.thumbnail }}
-          // Tingginya kita buat dinamis agar grid terlihat lebih menarik.
+          // We vary the height dynamically to create a more engaging, masonry-style grid.
           style={[
             styles.articleImage,
             { height: index % 3 === 0 ? hp(25) : hp(35) },
           ]}
         />
-        {/* Judul artikel. Kita potong jika terlalu panjang. */}
+        {/* The article title. We truncate it if it's too long. */}
         <Text style={styles.articleText}>
           {item.title.length > 20
             ? item.title.slice(0, 20) + "..."
             : item.title}
         </Text>
-        {/* Deskripsi artikel. Kita juga potong jika terlalu panjang. */}
+        {/* The article description. Also truncated if it exceeds the limit. */}
         <Text style={styles.articleDescription}>
           {item.description.length > 40
             ? item.description.slice(0, 40) + "..."
@@ -75,7 +91,8 @@ const ArticleCard = ({ item, index, navigation }) => {
   );
 };
 
-// Dan ini adalah semua style yang kita butuhkan untuk komponen ini.
+// And here are all the styles we need for this component.
+// Using StyleSheet.create helps optimize performance.
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: wp(4),
@@ -91,12 +108,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     marginBottom: hp(1.5),
-    paddingHorizontal: wp(1), // Memberi sedikit ruang antar kartu.
+    paddingHorizontal: wp(1), // Adds a little space between cards.
   },
   articleImage: {
     width: "100%",
-    borderRadius: 20, // Sedikit membulatkan sudut gambar.
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 20, // Slightly rounds the corners of the image.
+    backgroundColor: "rgba(0, 0, 0, 0.05)", // A placeholder color.
   },
   articleText: {
     fontSize: hp(1.7),

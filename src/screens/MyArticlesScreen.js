@@ -1,3 +1,6 @@
+// This screen is the management hub for all user-created articles.
+// It allows users to view, add, edit, and delete their personal news stories.
+
 import {
   View,
   Text,
@@ -9,7 +12,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -20,40 +23,55 @@ export default function MyArticlesScreen() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      const storedArticles = await AsyncStorage.getItem("customArticles");
-      if (storedArticles) {
-        setArticles(JSON.parse(storedArticles));
-      }
-      setLoading(false); // Loading is complete
-    };
+  // `useFocusEffect` is a hook from React Navigation that runs a side-effect
+  // whenever the screen comes into focus. This is more suitable than `useEffect`
+  // here because we want to refetch the articles every time the user navigates
+  // back to this screen (e.g., after adding or editing an article).
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchArticles = async () => {
+        try {
+          const storedArticles = await AsyncStorage.getItem("customArticles");
+          if (storedArticles) {
+            setArticles(JSON.parse(storedArticles));
+          }
+        } catch (error) {
+          console.error("Failed to fetch articles:", error);
+        } finally {
+          setLoading(false); // Loading is complete
+        }
+      };
 
-    fetchArticles();
-  }, []);
+      fetchArticles();
+    }, [])
+  );
 
+  // Navigates to the form screen to add a new article.
   const handleAddArticle = () => {
     navigation.navigate("NewsFormScreen");
   };
 
+  // Navigates to the detail screen for the selected article.
   const handleArticleClick = (article) => {
     navigation.navigate("CustomNewsScreen", { article });
   };
 
+  // Deletes an article from the list and from AsyncStorage.
   const deleteArticle = async (index) => {
     try {
       const updatedArticles = [...articles];
-      updatedArticles.splice(index, 1); // Remove article from array
+      updatedArticles.splice(index, 1); // Remove article from the array
       await AsyncStorage.setItem(
         "customArticles",
         JSON.stringify(updatedArticles)
       ); // Update AsyncStorage
-      setArticles(updatedArticles); // Update state
+      setArticles(updatedArticles); // Update the component's state
     } catch (error) {
       console.error("Error deleting the article:", error);
     }
   };
 
+  // Navigates to the form screen to edit an existing article, passing its data.
   const editArticle = (article, index) => {
     navigation.navigate("NewsFormScreen", {
       articleToEdit: article,
@@ -64,14 +82,19 @@ export default function MyArticlesScreen() {
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
         <Text style={styles.backButtonText}>{"Back"}</Text>
       </TouchableOpacity>
 
+      {/* Add Article Button */}
       <TouchableOpacity onPress={handleAddArticle} style={styles.addButton}>
         <Text style={styles.addButtonText}>Add New Article</Text>
       </TouchableOpacity>
 
+      {/* Conditional Rendering: Show a loader, a message, or the list of articles. */}
       {loading ? (
         <ActivityIndicator size="large" color="#f59e0b" />
       ) : (
@@ -92,7 +115,10 @@ export default function MyArticlesScreen() {
                     />
                   )}
                   <Text style={styles.articleTitle}>{article.title}</Text>
-                  <Text style={styles.articleDescription} testID="articleDescp">
+                  <Text
+                    style={styles.articleDescription}
+                    testID="articleDescp"
+                  >
                     {article.description
                       ? `${article.description.substring(0, 50)}...`
                       : ""}

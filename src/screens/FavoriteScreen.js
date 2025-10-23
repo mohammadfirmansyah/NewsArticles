@@ -1,4 +1,4 @@
-// Selamat datang di FavoriteScreen! Di sini, pengguna bisa melihat semua artikel yang telah mereka tandai sebagai favorit.
+// Welcome to the FavoriteScreen! Here, users can view all the articles they've marked as favorites.
 
 import React from "react";
 import { useSelector } from "react-redux";
@@ -19,74 +19,54 @@ import {
 export default function FavoriteScreen() {
   const navigation = useNavigation();
 
-  // Kita ambil daftar artikel favorit dari state Redux menggunakan `useSelector`.
-  const favoriteArticles = useSelector((state) => state.favorites);
-  const favoriteArticlesList = favoriteArticles?.favoriteArticles || [];
+  // We retrieve the list of favorite articles from the Redux state using `useSelector`.
+  const { favoriteArticles } = useSelector((state) => state.favorites);
 
-  // Jika tidak ada artikel favorit, kita tampilkan pesan khusus.
-  if (favoriteArticlesList.length === 0) {
+  // If there are no favorite articles, we display a special message.
+  if (favoriteArticles.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No favorite articles yet!</Text>
-        {/* Tombol untuk kembali ke layar sebelumnya. */}
+        {/* A button to navigate back to the previous screen. */}
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{
-            backgroundColor: "#2563EB",
-            padding: 10,
-            borderRadius: 5,
-            marginTop: 10,
-            width: 100,
-            alignItems: "center",
-          }}
+          style={styles.goBackButton}
         >
-          <Text style={{ color: "#fff" }}>Go back</Text>
+          <Text style={styles.goBackButtonText}>Go back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  // Jika ada artikel favorit, kita tampilkan daftarnya.
+  // If there are favorite articles, we display them in a list.
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      {/* Judul Halaman */}
-      <View testID="FavoriteArticles" style={{ paddingTop: hp(5), paddingHorizontal: wp(4) }}>
-        <Text
-          style={{ fontSize: hp(3.8), fontWeight: "600", color: "#333" }}
-        >
-          My Favorite Articles
-        </Text>
+    <View style={styles.container}>
+      {/* Page Title */}
+      <View testID="FavoriteArticles" style={styles.header}>
+        <Text style={styles.headerTitle}>My Favorite Articles</Text>
       </View>
 
-      {/* Tombol untuk kembali */}
+      {/* Back Button */}
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={{
-          backgroundColor: "#2563EB",
-          padding: 10,
-          borderRadius: 5,
-          marginTop: 10,
-          width: 100,
-          alignItems: "center",
-          marginLeft: wp(4),
-        }}
+        style={[styles.goBackButton, styles.goBackButtonList]}
       >
-        <Text style={{ color: "#fff" }}>Go back</Text>
+        <Text style={styles.goBackButtonText}>Go back</Text>
       </TouchableOpacity>
 
-      {/* Daftar artikel favorit menggunakan FlatList. */}
+      {/* List of favorite articles using FlatList for performance. */}
       <FlatList
-        data={favoriteArticlesList}
+        data={favoriteArticles}
         contentContainerStyle={styles.listContentContainer}
-        keyExtractor={(item) => item.idArticle} // Kunci unik untuk setiap item.
+        keyExtractor={(item) => item.idArticle.toString()} // Unique key for each item.
         renderItem={({ item }) => (
-          // Setiap item adalah kartu yang bisa diklik untuk melihat detail.
+          // Each item is a tappable card that navigates to the detail screen.
           <TouchableOpacity
             style={styles.cardContainer}
-            onPress={() => navigation.navigate("ArticleDetail", item)}
+            onPress={() => navigation.navigate("ArticleDetail", { ...item })}
           >
             <Image
-              source={{ uri: item.thumbnail }}
+              source={{ uri: item.thumbnail || item.image }} // Fallback for custom articles
               style={styles.articleImage}
             />
             <Text style={styles.articleTitle}>

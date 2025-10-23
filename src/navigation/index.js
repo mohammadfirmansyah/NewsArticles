@@ -1,12 +1,12 @@
-// Mari kita siapkan sistem navigasi untuk aplikasi berita kita.
-// Ini seperti membuat peta agar aplikasi tahu cara berpindah dari satu layar ke layar lainnya.
+// Let's set up the navigation system for our news application.
+// This is like creating a map so the app knows how to move from one screen to another.
 
-// Pertama, kita impor semua alat yang kita butuhkan dari React Navigation.
+// First, we import all the tools we need from React Navigation.
 import * as React from "react";
-import { NavigationContainer } from "@react-navigation/native"; // Ini adalah "pembungkus" utama untuk semua navigasi.
-import { createNativeStackNavigator } from "@react-navigation/native-stack"; // Ini adalah jenis navigasi yang kita gunakan, seperti tumpukan kartu.
+import { NavigationContainer } from "@react-navigation/native"; // This is the main "wrapper" for all navigation.
+import { createNativeStackNavigator } from "@react-navigation/native-stack"; // This is the type of navigation we'll use, like a stack of cards.
 
-// Selanjutnya, kita impor semua "tujuan" atau layar yang akan kita navigasikan.
+// Next, we import all the "destinations" or screens we will navigate to.
 import HomeScreen from "../screens/HomeScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import MyArticlesScreen from "../screens/MyArticlesScreen";
@@ -15,24 +15,29 @@ import NewsFormScreen from "../screens/NewsFormScreen";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import ArticleDetailScreen from "../screens/ArticleDetailScreen";
 
-// Kita buat "tumpukan" navigator kita. Anggap saja ini sebagai dek kartu di mana setiap kartu adalah layar.
+// We create our navigator "stack". Think of this as a deck of cards where each card is a screen.
 const Stack = createNativeStackNavigator();
 
-// Ini adalah komponen utama yang mengatur semua logika navigasi.
+/**
+ * The main AppNavigation component.
+ * This is where we define the entire navigation structure of the app.
+ * It uses a Stack Navigator, which means new screens are "pushed" on top of the stack,
+ * and going back "pops" them off.
+ */
 function AppNavigation() {
   return (
-    // Semua navigasi harus dibungkus di dalam `NavigationContainer`.
+    // All navigation must be wrapped inside a `NavigationContainer`.
     <NavigationContainer>
-      {/* `Stack.Navigator` adalah komponen yang mengelola tumpukan layar kita. */}
+      {/* `Stack.Navigator` is the component that manages our stack of screens. */}
       <Stack.Navigator
-        // `initialRouteName` menentukan layar mana yang akan menjadi kartu pertama di tumpukan (layar pembuka).
+        // `initialRouteName` determines which screen will be the first card in the stack (the opening screen).
         initialRouteName="Welcome"
-        // `screenOptions` memungkinkan kita mengatur gaya untuk semua layar di tumpukan ini.
-        // Di sini, kita menyembunyikan header default karena kita mungkin ingin membuat header kustom nanti.
+        // `screenOptions` lets us set styles for all screens in this stack.
+        // Here, we hide the default header because we might want to create custom headers later.
         screenOptions={{ headerShown: false }}
       >
-        {/* Sekarang, kita daftarkan semua layar kita sebagai "kartu" di dalam tumpukan. */}
-        {/* Setiap `Stack.Screen` membutuhkan `name` (sebagai ID unik) dan `component` (layar yang akan ditampilkan). */}
+        {/* Now, we register all our screens as "cards" within the stack. */}
+        {/* Each `Stack.Screen` needs a `name` (as a unique ID) and a `component` (the screen to display). */}
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
@@ -45,5 +50,5 @@ function AppNavigation() {
   );
 }
 
-// Terakhir, kita ekspor `AppNavigation` agar bisa digunakan di file utama aplikasi kita (biasanya App.js).
+// Finally, we export `AppNavigation` so it can be used in our main app file (usually App.js).
 export default AppNavigation;

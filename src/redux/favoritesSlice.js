@@ -1,45 +1,54 @@
-// Mari kita definisikan "slice" Redux untuk mengelola artikel favorit kita.
-// Anggap saja ini sebagai modul khusus untuk semua logika yang berhubungan dengan favorit.
+// Let's define a Redux "slice" to manage our favorite articles.
+// Think of this as a dedicated module for all logic related to favorites.
 
 import { createSlice } from "@reduxjs/toolkit";
 
-// `initialState` adalah keadaan awal dari slice ini.
-// Kita mulai dengan `favoriteArticles` sebagai array kosong.
+// `initialState` is the starting state for this slice.
+// We begin with `favoriteArticles` as an empty array.
 const initialState = {
   favoriteArticles: [],
 };
 
-// `createSlice` dari Redux Toolkit membuat segalanya lebih mudah.
-// Ia secara otomatis membuat action creators dan reducer untuk kita.
+/**
+ * `createSlice` from Redux Toolkit simplifies state management.
+ * It automatically generates action creators and reducers for us based on the
+ * functions we provide in the `reducers` object.
+ */
 const favoritesSlice = createSlice({
-  name: "favorites", // Nama untuk slice ini.
+  name: "favorites", // A unique name for this slice.
   initialState,
-  // `reducers` adalah tempat kita mendefinisikan semua fungsi yang bisa mengubah state ini.
+  // `reducers` is where we define all the functions that can modify this slice's state.
   reducers: {
-    // Ini adalah reducer `toggleFavorite`. Ia akan menangani penambahan dan penghapusan artikel dari daftar favorit.
+    /**
+     * The `toggleFavorite` reducer handles adding and removing articles from the favorites list.
+     * Redux Toolkit uses Immer internally, which allows us to write "mutating" logic
+     * in reducers, but it safely translates it into an immutable update.
+     * @param {Object} state - The current state of the slice.
+     * @param {Object} action - The dispatched action, containing the payload.
+     */
     toggleFavorite: (state, action) => {
-      // `action.payload` berisi data yang kita kirim saat memanggil action ini (dalam kasus ini, objek artikel).
+      // `action.payload` contains the data we send when dispatching this action (in this case, the article object).
       const article = action.payload;
       
-      // Kita cari tahu apakah artikel ini sudah ada di dalam daftar favorit.
+      // We check if the article already exists in the favorites list by its ID.
       const existingIndex = state.favoriteArticles.findIndex(
         (item) => item.idArticle === article.idArticle
       );
 
-      // Jika `existingIndex` lebih besar atau sama dengan 0, berarti artikel sudah ada.
+      // If `existingIndex` is 0 or greater, the article is already a favorite.
       if (existingIndex >= 0) {
-        // Jadi, kita hapus artikel itu dari array.
+        // So, we remove it from the array.
         state.favoriteArticles.splice(existingIndex, 1);
       } else {
-        // Jika tidak ditemukan, berarti ini artikel baru. Kita tambahkan ke dalam array.
+        // If it's not found, it's a new favorite. We add it to the array.
         state.favoriteArticles.push(article);
       }
     },
   },
 });
 
-// Kita ekspor action `toggleFavorite` agar bisa digunakan di komponen lain (seperti di ArticleDetailScreen).
+// We export the `toggleFavorite` action so it can be dispatched from our components (e.g., ArticleDetailScreen).
 export const { toggleFavorite } = favoritesSlice.actions;
 
-// Kita juga ekspor reducer-nya agar bisa digabungkan di dalam store utama kita.
+// We also export the reducer itself so it can be combined in our main Redux store.
 export default favoritesSlice.reducer;

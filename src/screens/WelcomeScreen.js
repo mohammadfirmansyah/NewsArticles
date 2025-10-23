@@ -1,76 +1,80 @@
-// Selamat datang di WelcomeScreen! Ini adalah layar pertama yang dilihat pengguna.
-// Mari kita impor semua yang kita butuhkan.
+// Welcome to the WelcomeScreen! This is the first screen the user sees.
+// Let's import everything we need.
 
-// Impor komponen dasar dari React Native untuk membangun UI.
+// Import basic components from React Native to build the UI.
 import { View, Text, Image, StyleSheet } from "react-native";
-import React, { useEffect } from "react"; // `useEffect` kita gunakan untuk efek samping, seperti animasi dan navigasi.
+import React, { useEffect } from "react"; // `useEffect` is used for side effects, like animations and navigation.
 
-// `StatusBar` dari Expo memungkinkan kita mengubah warna teks di status bar (misalnya, ikon baterai dan jam).
+// `StatusBar` from Expo allows us to change the color of the status bar text (e.g., battery icon, clock).
 import { StatusBar } from "expo-status-bar";
 
-// Library ini sangat membantu! `hp` dan `wp` membuat UI kita responsif di berbagai ukuran layar.
+// This library is a great help! `hp` and `wp` make our UI responsive across different screen sizes.
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-// Inilah bagian ajaibnya! `react-native-reanimated` untuk animasi yang mulus.
+// Here's the magic part! `react-native-reanimated` for smooth animations.
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 
-// `useNavigation` adalah hook yang memberi kita akses ke fungsi navigasi untuk berpindah layar.
+// `useNavigation` is a hook that gives us access to navigation functions to switch screens.
 import { useNavigation } from "@react-navigation/native";
 
-// Inilah komponen utama kita, `WelcomeScreen`.
+/**
+ * The main WelcomeScreen component.
+ * It displays an animated splash screen and then automatically navigates to the HomeScreen.
+ */
 export default function WelcomeScreen() {
-  // Kita buat dua 'shared values' untuk animasi cincin.
-  // Anggap saja ini sebagai state khusus untuk animasi yang bisa berjalan lancar.
-  const ring1padding = useSharedValue(0); // Padding untuk cincin bagian dalam.
-  const ring2padding = useSharedValue(0); // Padding untuk cincin bagian luar.
+  // We create two 'shared values' for the ring animations.
+  // Think of these as special state variables for animations that can run smoothly on the UI thread.
+  const ring1padding = useSharedValue(0); // Padding for the inner ring.
+  const ring2padding = useSharedValue(0); // Padding for the outer ring.
 
-  // Kita panggil `useNavigation` untuk mendapatkan akses ke fungsi `navigate`.
   const navigation = useNavigation();
 
-  // `useEffect` akan berjalan sekali saat komponen ini pertama kali muncul.
+  // `useEffect` runs once when this component first mounts.
   useEffect(() => {
-    // Kita reset padding ke 0 untuk memulai animasi dari awal.
+    // We reset the padding to 0 to start the animation from the beginning.
     ring1padding.value = 0;
     ring2padding.value = 0;
 
-    // Kita gunakan `setTimeout` untuk menunda animasi, menciptakan efek yang berurutan.
-    // Cincin pertama akan mulai membesar setelah 100ms.
+    // We use `setTimeout` to delay the animations, creating a sequential effect.
+    // The first ring will start expanding after 100ms.
     setTimeout(
-      () => (ring1padding.value = withSpring(ring1padding.value + hp(10))), // `withSpring` memberikan efek pegas yang alami.
+      () => (ring1padding.value = withSpring(ring1padding.value + hp(5))), // `withSpring` provides a natural, bouncy effect.
       100
     );
-    // Cincin kedua menyusul setelah 300ms.
+    // The second ring follows after 300ms.
     setTimeout(
-      () => (ring2padding.value = withSpring(ring2padding.value + hp(10.5))),
+      () => (ring2padding.value = withSpring(ring2padding.value + hp(5.5))),
       300
     );
 
-    // Setelah animasi berjalan, kita tunggu 2.5 detik sebelum pindah ke layar utama.
+    // After the animation runs, we wait 2.5 seconds before moving to the main screen.
     setTimeout(() => navigation.navigate("Home"), 2500);
   }, []);
 
-  // Di sini kita mendefinisikan tampilan komponen.
+  // Here we define the component's layout.
   return (
     <View style={styles.container}>
-      {/* Kita atur status bar agar teksnya berwarna terang, cocok dengan background gelap. */}
+      {/* We set the status bar text to light, which suits the dark background. */}
       <StatusBar style="light" />
 
-      {/* Ini adalah cincin luar yang animasinya dikontrol oleh `ring2padding`. */}
+      {/* This is the outer ring whose animation is controlled by `ring2padding`. */}
       <Animated.View style={[styles.ring, { padding: ring2padding }]}>
-        {/* Dan ini cincin dalam, dikontrol oleh `ring1padding`. */}
+        {/* And this is the inner ring, controlled by `ring1padding`. */}
         <Animated.View style={[styles.ring, { padding: ring1padding }]}>
-          {/* Di tengah-tengah, kita tampilkan logo aplikasi. */}
+          {/* In the center, we display the application logo. */}
           <Image
-            source={{uri:'https://cdn.pixabay.com/photo/2013/07/12/17/43/newspaper-152320_1280.png'}}
+            source={{
+              uri: "https://cdn.pixabay.com/photo/2013/07/12/17/43/newspaper-152320_1280.png",
+            }}
             style={styles.logo}
           />
         </Animated.View>
       </Animated.View>
 
-      {/* Bagian untuk menampilkan judul dan subtitle aplikasi. */}
+      {/* Section for displaying the app title and subtitle. */}
       <View style={styles.textContainer}>
         <Text style={styles.title}>WHATS GOING ON!</Text>
         <Text style={styles.subtitle}>your latest news app</Text>
@@ -79,23 +83,23 @@ export default function WelcomeScreen() {
   );
 }
 
-// `StyleSheet.create` digunakan untuk mendefinisikan semua gaya (style) komponen kita.
-// Ini lebih efisien daripada inline-style.
+// `StyleSheet.create` is used to define all the styles for our component.
+// This is more efficient than inline styles.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#6439FF", // Warna latar yang cerah dan menarik.
+    backgroundColor: "#6439FF", // A bright and engaging background color.
   },
   ring: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)", // Warna putih semi-transparan untuk efek cincin.
-    borderRadius: 9999, // `borderRadius` super besar untuk membuat lingkaran sempurna.
+    backgroundColor: "rgba(255, 255, 255, 0.2)", // Semi-transparent white for the ring effect.
+    borderRadius: 9999, // A very large `borderRadius` to create a perfect circle.
   },
   logo: {
-    width: 250,
-    height: 250,
-    resizeMode: "contain", // `contain` memastikan seluruh gambar logo terlihat tanpa terpotong.
+    width: hp(20), // Responsive width.
+    height: hp(20), // Responsive height.
+    resizeMode: "contain", // `contain` ensures the entire logo is visible without being cropped.
   },
   textContainer: {
     alignItems: "center",

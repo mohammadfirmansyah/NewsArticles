@@ -1,3 +1,6 @@
+// This component is responsible for rendering the category filter bar.
+// It allows users to switch between different news categories and access personal sections.
+
 import {
   View,
   Text,
@@ -7,30 +10,43 @@ import {
   StyleSheet,
 } from "react-native";
 import React from "react";
-import { useNavigation } from "@react-navigation/native"; // Import navigation
+import { useNavigation } from "@react-navigation/native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+/**
+ * A horizontal scrolling list of categories.
+ * @param {{
+ *   categories: Array<Object>,
+ *   activeCategory: string,
+ *   handleChangeCategory: (category: string) => void
+ * }} props - Component props.
+ */
 export default function Categories({
   categories,
   activeCategory,
   handleChangeCategory,
 }) {
-  const navigation = useNavigation(); // Use navigation
+  const navigation = useNavigation();
 
   return (
+    // We use an Animated.View to apply a "FadeInDown" animation when the component mounts.
+    // This provides a smooth, professional entrance effect.
     <Animated.View entering={FadeInDown.duration(500).springify()}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
       >
-        {/* Add "My Food" category */}
+        {/* 
+          Static "My News" category.
+          This button navigates the user to the screen where they can see their own created articles.
+        */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("MyArticles")} // Navigate to "MyFood" screen
+          onPress={() => navigation.navigate("MyArticles")}
           style={styles.categoryContainer}
         >
           <View style={[styles.imageContainer, styles.myFoodButton]}>
@@ -41,8 +57,13 @@ export default function Categories({
           </View>
           <Text style={styles.categoryText}>My News</Text>
         </TouchableOpacity>
+
+        {/* 
+          Static "My Favorites" category.
+          This button navigates the user to their list of saved favorite articles.
+        */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("FavoriteScreen")} // Navigate to "MyFood" screen
+          onPress={() => navigation.navigate("FavoriteScreen")}
           style={styles.categoryContainer}
         >
           <View style={[styles.imageContainer, styles.myFoodButton]}>
@@ -54,8 +75,14 @@ export default function Categories({
           <Text style={styles.categoryText}>My Favorites</Text>
         </TouchableOpacity>
 
+        {/* 
+          Dynamically rendered categories from the API.
+          We map over the `categories` array passed in as a prop.
+        */}
         {categories.map((cat, index) => {
-          let isActive = cat.strCategory == activeCategory;
+          // Check if the current category is the active one.
+          let isActive = cat.strCategory === activeCategory;
+          // Apply a different style to the active category button.
           let activeButtonStyle = isActive
             ? styles.activeButton
             : styles.inactiveButton;
@@ -89,14 +116,14 @@ const styles = StyleSheet.create({
     marginRight: wp(4),
   },
   imageContainer: {
-    borderRadius: 9999,
+    borderRadius: 9999, // A large number to ensure a perfect circle.
     padding: 6,
   },
   activeButton: {
-    backgroundColor: "#7CF5FF",
+    backgroundColor: "#7CF5FF", // A bright color to indicate the active state.
   },
   inactiveButton: {
-    backgroundColor: "rgba(0, 0, 0, 0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.1)", // A subtle color for inactive items.
   },
   categoryImage: {
     width: hp(6),

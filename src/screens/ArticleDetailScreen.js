@@ -1,4 +1,4 @@
-// Selamat datang di ArticleDetailScreen! Di sini kita akan menampilkan detail lengkap dari sebuah artikel.
+// Welcome to the ArticleDetailScreen! This is where we display the full details of a single article.
 
 import {
   View,
@@ -14,29 +14,33 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux"; // Kita butuh hook dari Redux untuk mengelola state favorit.
-import { toggleFavorite } from "../redux/favoritesSlice"; // Dan action untuk menambah/menghapus favorit.
+// We need hooks from Redux to manage our favorite state.
+import { useDispatch, useSelector } from "react-redux";
+// And the action to add/remove a favorite.
+import { toggleFavorite } from "../redux/favoritesSlice";
 
 export default function ArticleDetailScreen(props) {
-  // Pertama, kita ambil data artikel yang dikirim dari layar sebelumnya (HomeScreen).
+  // First, we get the article data passed from the previous screen (e.g., HomeScreen).
+  // React Navigation places this data in `props.route.params`.
   const article = props.route.params;
 
   const dispatch = useDispatch();
-  // Kita ambil daftar artikel favorit dari state Redux.
+  // We use the `useSelector` hook to access the `favoriteArticles` array from our Redux state.
   const favoriteArticles = useSelector(
     (state) => state.favorites.favoriteArticles
   );
-  // Kita cek apakah artikel ini sudah ada di daftar favorit.
+  // We then check if the current article is already in the favorites list.
+  // The `some` method is an efficient way to check for existence.
   const isFavourite = favoriteArticles?.some(
     (favArticle) => favArticle.idArticle === article.idArticle
   );
 
   const navigation = useNavigation();
 
-  // Fungsi ini akan dijalankan saat tombol favorit ditekan.
+  // This function is called when the favorite button is pressed.
   const handleToggleFavorite = () => {
-    // Kita 'dispatch' action `toggleFavorite` dengan membawa data artikel ini.
-    // Redux akan menangani logika untuk menambah atau menghapusnya dari daftar.
+    // We 'dispatch' the `toggleFavorite` action, passing the current article as the payload.
+    // Redux will then handle the logic to either add or remove it from the list.
     dispatch(toggleFavorite(article));
   };
 
@@ -46,7 +50,7 @@ export default function ArticleDetailScreen(props) {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
-      {/* Bagian Gambar Artikel */}
+      {/* Article Image Section */}
       <View style={styles.imageContainer} testID="imageContainer">
         <Image
           source={{ uri: article.thumbnail }}
@@ -54,8 +58,8 @@ export default function ArticleDetailScreen(props) {
         />
       </View>
 
-      {/* Tombol Kembali dan Favorit */}
-      {/* Tombol-tombol ini kita letakkan di atas gambar dengan posisi absolut. */}
+      {/* Back and Favorite Buttons */}
+      {/* These buttons are positioned absolutely over the image for a modern UI effect. */}
       <View style={styles.topButtonsContainer}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -68,18 +72,18 @@ export default function ArticleDetailScreen(props) {
           style={[
             styles.favoriteButton,
             {
-              backgroundColor: "white",
+              backgroundColor: "white", // A neutral background for the button.
             },
           ]}
         >
-          {/* Tampilan tombol favorit berubah tergantung status `isFavourite`. */}
-          <Text>{isFavourite ? "♥" : "♡"}</Text>
+          {/* The favorite button's appearance changes based on the `isFavourite` status. */}
+          <Text style={styles.heartIcon}>{isFavourite ? "♥" : "♡"}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Konten Detail Artikel */}
+      {/* Article Detail Content */}
       <View style={styles.contentContainer}>
-        {/* Judul dan Kategori */}
+        {/* Title and Category */}
         <View
           style={styles.articleDetailsContainer}
           testID="articleDetailsContainer"
@@ -92,7 +96,7 @@ export default function ArticleDetailScreen(props) {
           </Text>
         </View>
 
-        {/* Deskripsi */}
+        {/* Description */}
         <View style={styles.sectionContainer} testID="sectionContainer">
           <Text style={styles.sectionTitle}>Description</Text>
           <Text style={styles.descriptionText}>{article.description}</Text>

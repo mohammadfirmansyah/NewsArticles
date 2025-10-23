@@ -1,5 +1,5 @@
-// Selamat datang di HomeScreen! Ini adalah layar utama aplikasi kita, tempat semua berita ditampilkan.
-// Mari kita siapkan semua yang kita butuhkan.
+// Welcome to the HomeScreen! This is the main screen of our application, where all the news is displayed.
+// Let's set up everything we need.
 
 import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
 import React, { useState } from "react";
@@ -9,20 +9,23 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-// Kita juga butuh komponen kustom yang sudah kita buat untuk menampilkan kategori dan artikel.
+// We also need the custom components we've built to display categories and articles.
 import Categories from "../components/categories";
 import Articles from "../components/articles";
 
-// Inilah komponen utama kita, `HomeScreen`.
+/**
+ * The main HomeScreen component.
+ * This component acts as a container and data provider for the `Categories` and `Articles` components.
+ */
 export default function HomeScreen() {
-  // `useState` kita gunakan untuk mengelola data yang bisa berubah di layar ini.
+  // We use `useState` to manage data that can change on this screen.
 
-  // `activeCategory` akan menyimpan kategori berita yang sedang dipilih oleh pengguna.
-  // Kita mulai dengan "Technology" sebagai default.
+  // `activeCategory` will store the news category currently selected by the user.
+  // We'll start with "Technology" as the default.
   const [activeCategory, setActiveCategory] = useState("Technology");
 
-  // `categories` berisi daftar semua kategori berita yang kita miliki.
-  // Untuk sekarang, kita gunakan data dummy (data bohongan) langsung di sini.
+  // `categories` contains the list of all news categories we have.
+  // For now, we're using hardcoded "dummy" data directly in the component.
   const [categories, setCategories] = useState([
     {
       idCategory: "1",
@@ -56,8 +59,8 @@ export default function HomeScreen() {
     },
   ]);
 
-  // `allArticles` berisi semua artikel berita kita.
-  // Sama seperti kategori, kita masih menggunakan data dummy.
+  // `allArticles` contains all our news articles.
+  // Just like categories, we're still using dummy data for now.
   const [allArticles, setAllArticles] = useState([
     {
       idArticle: "1",

@@ -1,3 +1,6 @@
+// This screen displays the details of a user-created article.
+// It's similar to ArticleDetailScreen but tailored for articles stored locally.
+
 import {
   View,
   Text,
@@ -18,17 +21,24 @@ import { toggleFavorite } from "../redux/favoritesSlice";
 export default function CustomNewsScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
   const route = useRoute();
-  const { article } = route.params || {}; // Pass the article object as a parameter
+
+  // We retrieve the 'article' object passed as a navigation parameter.
+  const { article } = route.params || {};
+
+  // Access the list of favorite articles from the Redux store.
   const favoriteArticles = useSelector(
     (state) => state.favorites.favoriteArticles
   );
-  // Kita gunakan `some` karena daftar favorit menyimpan objek artikel lengkap, bukan hanya ID.
-  const isFavourite = favoriteArticles?.some(
-    (favArticle) => favArticle.idArticle === article?.idArticle
-  ) ?? false;
 
+  // Determine if this custom article is currently in the favorites list.
+  // We use `some` because the favorites list stores complete article objects.
+  const isFavourite =
+    favoriteArticles?.some(
+      (favArticle) => favArticle.idArticle === article?.idArticle
+    ) ?? false;
+
+  // If for some reason no article data is received, display a fallback message.
   if (!article) {
     return (
       <View style={styles.container}>
@@ -37,23 +47,25 @@ export default function CustomNewsScreen() {
     );
   }
 
+  // This function dispatches the `toggleFavorite` action to update the Redux state.
   const handleToggleFavorite = () => {
-    dispatch(toggleFavorite(article)); // Adjust the action to handle articles
+    dispatch(toggleFavorite(article));
   };
 
   return (
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent} testID="scrollContent"
+      contentContainerStyle={styles.scrollContent}
+      testID="scrollContent"
     >
       {/* Article Image */}
       <View style={styles.imageContainer} testID="imageContainer">
         <Image source={{ uri: article.image }} style={styles.articleImage} />
       </View>
-      <View
-        style={styles.topButtonsContainer} testID="topButtonsContainer"
-      >
+
+      {/* Overlay Buttons: Back and Favorite */}
+      <View style={styles.topButtonsContainer} testID="topButtonsContainer">
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
@@ -64,7 +76,7 @@ export default function CustomNewsScreen() {
           onPress={handleToggleFavorite}
           style={styles.favoriteButton}
         >
-          <Text>{isFavourite ? "♥" : "♡"}</Text>
+          <Text style={styles.heartIcon}>{isFavourite ? "♥" : "♡"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -98,7 +110,6 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    marginTop: 4,
   },
   contentContainer: {
     paddingHorizontal: wp(4),
@@ -139,8 +150,19 @@ const styles = StyleSheet.create({
     marginRight: wp(5),
     backgroundColor: "white",
   },
+  heartIcon: {
+    fontSize: hp(3.5),
+    color: "#f43f5e",
+  },
   contentText: {
     fontSize: hp(1.6),
     color: "#4B5563",
+  },
+  title: {
+    fontSize: hp(3),
+    fontWeight: "bold",
+    color: "#4B5563",
+    textAlign: "center",
+    marginTop: hp(10),
   },
 });
