@@ -24,7 +24,10 @@ export default function CustomNewsScreen() {
   const favoriteArticles = useSelector(
     (state) => state.favorites.favoriteArticles
   );
-  const isFavourite = favoriteArticles.includes(article.idArticle); // Adjust this according to your article structure
+  // Kita gunakan `some` karena daftar favorit menyimpan objek artikel lengkap, bukan hanya ID.
+  const isFavourite = favoriteArticles?.some(
+    (favArticle) => favArticle.idArticle === article?.idArticle
+  ) ?? false;
 
   if (!article) {
     return (
@@ -46,17 +49,32 @@ export default function CustomNewsScreen() {
     >
       {/* Article Image */}
       <View style={styles.imageContainer} testID="imageContainer">
-      
+        <Image source={{ uri: article.image }} style={styles.articleImage} />
       </View>
       <View
         style={styles.topButtonsContainer} testID="topButtonsContainer"
       >
-       
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Text>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleToggleFavorite}
+          style={styles.favoriteButton}
+        >
+          <Text>{isFavourite ? "♥" : "♡"}</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Article Details */}
       <View style={styles.contentContainer} testID="contentContainer">
-      
+        <Text style={styles.articleTitle}>{article.title}</Text>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Content</Text>
+          <Text style={styles.contentText}>{article.description}</Text>
+        </View>
       </View>
     </ScrollView>
   );
